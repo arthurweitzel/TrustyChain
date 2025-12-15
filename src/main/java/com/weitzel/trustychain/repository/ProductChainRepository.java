@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface ProductChainRepository extends JpaRepository<ProductChain, UUID> {
-    Optional<ProductChain> findTopByProductCodeOrderByIdDesc(String productCode);
 
     List<ProductChain> findByProductCodeOrderByCreatedAtAsc(String productCode);
 

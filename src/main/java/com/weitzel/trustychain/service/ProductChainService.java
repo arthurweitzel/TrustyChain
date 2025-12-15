@@ -34,6 +34,7 @@ public class ProductChainService {
                 .map(ProductChain::getCurrentHash)
                 .orElse(null);
 
+        // this BEGIN string could be anything, since its only "thash" to be used to generate the hash itself
         String data = (lastHash == null ? "BEGIN" : lastHash)
                 + actorName
                 + productCode
