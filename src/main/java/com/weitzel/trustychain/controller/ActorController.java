@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,12 +23,12 @@ public class ActorController {
 
     @PostMapping
     public ResponseEntity<Actor> createActor(@RequestBody ActorRequest dto) {
-        Actor actor = actorService.registerActor(dto.name(), dto.role());
+        Actor actor = actorService.registerActor(dto.name(), dto.role(), dto.publicKey());
         return ResponseEntity.ok(actor);
     }
 
     @GetMapping("/{actorId}/signatures")
-    public ResponseEntity<List<Map<String, String>>> getActorSignatures(@PathVariable String actorId) {
+    public ResponseEntity<List<Map<String, String>>> getActorSignatures(@PathVariable UUID actorId) {
 
         List<ProductChain> events = actorService.getEventsByActor(actorId);
 

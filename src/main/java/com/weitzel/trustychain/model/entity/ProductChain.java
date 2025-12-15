@@ -38,6 +38,14 @@ public class ProductChain {
     @Column(name = "current_hash", nullable = false)
     private String currentHash;
 
+    @Lob
+    @Column(name = "signature", nullable = false)
+    private String signature;
+
+    @Lob
+    @Column(name = "public_key_snapshot", nullable = false)
+    private String publicKeySnapshot;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -46,7 +54,9 @@ public class ProductChain {
              String productCode,
              String eventType,
              String metadata,
-             String previousHash
+             String previousHash,
+             String signature,
+             String publicKeySnapshot
              ) {
         this.actor = actor;
         this.productCode = productCode;
@@ -54,6 +64,8 @@ public class ProductChain {
         this.metadata = metadata;
         this.createdAt = LocalDateTime.now();
         this.previousHash = previousHash;
+        this.signature = signature;
+        this.publicKeySnapshot = publicKeySnapshot;
     }
 
     @PrePersist

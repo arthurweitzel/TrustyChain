@@ -19,21 +19,20 @@ public class ActorService {
         this.productChainRepository = productChainRepository;
     }
 
-    public Actor registerActor(String name, String role) {
+    public Actor registerActor(String name, String role, String publicKey) {
+        if (actorRepository.findByName(name).isPresent()) {
+            throw new RuntimeException("Actor with this name already exists");
+        }
         Actor newActor = new Actor();
+        newActor.setName(name);
+        newActor.setRole(role);
+        newActor.setPublicKey(publicKey);
         return actorRepository.save(newActor);
     }
 
-    public List<ProductChain> getEventsByActor(String actorId) {
-        // gambiarra braba pesada alucinogena
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(actorId);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid UUID format");
-        }
-        if (!actorRepository.existsById(uuid))
-            throw new RuntimeException("Actor not found");
-        return productChainRepository.findByActorId(actorId);
+    public List<ProductChain> getEventsByActor(UUID actorId) {
+        Actor actor = actorRepository.findById(actorId)
+                .orElseThrow(() -> new RuntimeException("Actor not found"));
+        return productChainRepository.findByActor(actor.getName());
     }
 }
