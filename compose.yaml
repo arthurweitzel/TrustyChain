@@ -1,0 +1,16 @@
+services:
+  database:
+    image: docker.io/library/postgres:16-alpine
+    container_name: trusty_chain_container
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${DB_NAME:-trusty_chain_db}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
