@@ -30,7 +30,7 @@ public class ProductChainService {
         Actor actor = actorRepository.findByName(actorName)
                 .orElseThrow(() -> new RuntimeException("Actor not found"));
 
-        String lastHash = productChainRepository.findTopByProductCodeOrderByIdDesc(productCode)
+        String lastHash = productChainRepository.findTopByProductCodeOrderByCreatedAtDesc(productCode)
                 .map(ProductChain::getCurrentHash)
                 .orElse(null);
 

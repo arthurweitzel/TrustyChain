@@ -23,7 +23,7 @@ public class ActorController {
 
     @PostMapping
     public ResponseEntity<Actor> createActor(@RequestBody ActorRequest dto) {
-        Actor actor = actorService.registerActor(dto.name(), dto.role(), dto.publicKey());
+        Actor actor = actorService.registerActor(dto.name(), dto.username(), dto.password(), dto.role(), dto.publicKey());
         return ResponseEntity.ok(actor);
     }
 

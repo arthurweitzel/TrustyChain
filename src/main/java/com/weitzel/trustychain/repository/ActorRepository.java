@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface ActorRepository extends JpaRepository<Actor, UUID> {
     Optional<Actor> findByName(String name);
+    Optional<Actor> findByUsername(String username);
 }
