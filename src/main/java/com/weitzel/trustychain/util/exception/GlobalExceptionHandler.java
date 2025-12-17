@@ -20,6 +20,20 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(Exceptions.ActorNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleActorNotFound(Exceptions.ActorNotFoundException e) {
+        log.warn("Actor not found: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND));
+    }
+
+    @ExceptionHandler(Exceptions.ActorAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleActorAlreadyExists(Exceptions.ActorAlreadyExistsException e) {
+        log.warn("Actor already exists: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException e) {
         log.warn("Authentication failed: {}", e.getMessage());

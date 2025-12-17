@@ -1,9 +1,11 @@
 package com.weitzel.trustychain.service;
 
+import com.weitzel.trustychain.model.DTO.ActorRequest;
 import com.weitzel.trustychain.model.entity.Actor;
 import com.weitzel.trustychain.model.entity.ProductChain;
 import com.weitzel.trustychain.repository.ActorRepository;
 import com.weitzel.trustychain.repository.ProductChainRepository;
+import com.weitzel.trustychain.util.exception.Exceptions;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +26,10 @@ public class ActorService {
 
     public Actor registerActor(String name, String username, String password, String role, String publicKey) {
         if (actorRepository.findByName(name).isPresent()) {
-            throw new RuntimeException("Actor with this name already exists");
+            throw new Exceptions.ActorAlreadyExistsException("Actor with this name already exists");
         }
         if (actorRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("Actor with this username already exists");
+            throw new Exceptions.ActorAlreadyExistsException("Actor with this username already exists");
         }
         Actor newActor = new Actor();
         newActor.setName(name);
@@ -40,7 +42,58 @@ public class ActorService {
 
     public List<ProductChain> getEventsByActor(UUID actorId) {
         Actor actor = actorRepository.findById(actorId)
-                .orElseThrow(() -> new RuntimeException("Actor not found"));
+                .orElseThrow(() -> new Exceptions.ActorNotFoundException("Actor not found"));
         return productChainRepository.findByActor(actor.getName());
+    }
+
+    public List<Actor> findAllActors() {
+        return actorRepository.findAll();
+    }
+
+    public Actor findActorById(UUID actorId) {
+        return actorRepository.findById(actorId)
+                .orElseThrow(() -> new Exceptions.ActorNotFoundException("Actor not found"));
+    }
+
+    public Actor updateActor(UUID actorId, ActorRequest actorDetails) {
+        Actor actor = actorRepository.findById(actorId)
+                .orElseThrow(() -> new Exceptions.ActorNotFoundException("Actor not found"));
+
+        if (actorDetails.name() != null) {
+            actorRepository.findByName(actorDetails.name()).ifPresent(existingActor -> {
+                if (!existingActor.getId().equals(actorId)) {
+                    throw new Exceptions.ActorAlreadyExistsException("Actor with this name already exists");
+                }
+            });
+            actor.setName(actorDetails.name());
+        }
+
+        if (actorDetails.username() != null) {
+            actorRepository.findByUsername(actorDetails.username()).ifPresent(existingActor -> {
+                if (!existingActor.getId().equals(actorId)) {
+                    throw new Exceptions.ActorAlreadyExistsException("Actor with this username already exists");
+                }
+            });
+            actor.setUsername(actorDetails.username());
+        }
+
+        if (actorDetails.password() != null) {
+            actor.setPassword(passwordEncoder.encode(actorDetails.password()));
+        }
+        if (actorDetails.role() != null) {
+            actor.setRole(actorDetails.role());
+        }
+        if (actorDetails.publicKey() != null) {
+            actor.setPublicKey(actorDetails.publicKey());
+        }
+
+        return actorRepository.save(actor);
+    }
+
+    public void deleteActor(UUID actorId) {
+        if (!actorRepository.existsById(actorId)) {
+            throw new Exceptions.ActorNotFoundException("Actor not found");
+        }
+        actorRepository.deleteById(actorId);
     }
 }

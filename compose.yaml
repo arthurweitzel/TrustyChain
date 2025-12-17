@@ -6,7 +6,7 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_DB=trusty_chain_db
-      - POSTGRES_USER=trustychain_user
+      - POSTGRES_USER=weitzel
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data

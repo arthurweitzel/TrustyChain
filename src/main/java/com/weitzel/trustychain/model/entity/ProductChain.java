@@ -38,11 +38,9 @@ public class ProductChain {
     @Column(name = "current_hash", nullable = false)
     private String currentHash;
 
-    @Lob
     @Column(name = "signature", nullable = false)
     private String signature;
 
-    @Lob
     @Column(name = "public_key_snapshot", nullable = false)
     private String publicKeySnapshot;
 

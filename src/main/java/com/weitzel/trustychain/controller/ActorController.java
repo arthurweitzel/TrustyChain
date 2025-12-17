@@ -41,4 +41,32 @@ public class ActorController {
 
         return ResponseEntity.ok(signatures);
     }
+
+    @GetMapping
+    public ResponseEntity<List<Actor>> getAllActors() {
+        List<Actor> actors = actorService.findAllActors();
+
+        return ResponseEntity.ok(actors);
+    }
+
+    @GetMapping("/{actorId}")
+    public ResponseEntity<Actor> getActorById(@PathVariable UUID actorId) {
+        Actor actor = actorService.findActorById(actorId);
+
+        return ResponseEntity.ok(actor);
+    }
+
+    @PutMapping("/{actorId}")
+    public ResponseEntity<Actor> updateActor(@PathVariable UUID actorId, @RequestBody ActorRequest actorDetails) {
+        Actor updatedActor = actorService.updateActor(actorId, actorDetails);
+
+        return ResponseEntity.ok(updatedActor);
+    }
+
+    @DeleteMapping("/{actorId}")
+    public ResponseEntity<Void> deleteActor(@PathVariable UUID actorId) {
+        actorService.deleteActor(actorId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
