@@ -5,8 +5,8 @@ services:
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=${DB_NAME:-trusty_chain_db}
-      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_DB=trusty_chain_db
+      - POSTGRES_USER=trustychain_user
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data

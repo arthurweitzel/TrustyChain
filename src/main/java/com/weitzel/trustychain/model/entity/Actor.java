@@ -34,8 +34,7 @@ public class Actor implements UserDetails {
     @Column(name = "role")
     private String role;
 
-    @Lob
-    @Column(name = "public_key", nullable = false)
+    @Column(name = "public_key", nullable = false, columnDefinition = "TEXT")
     private String publicKey;
 
     @Override
