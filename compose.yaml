@@ -5,7 +5,7 @@ services:
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=trusty_chain_db
+      - POSTGRES_DB=trustychain
       - POSTGRES_USER=weitzel
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
