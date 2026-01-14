@@ -15,10 +15,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
-/**
- * Service for generating and verifying signed timestamps.
- * Uses RSA keys to sign timestamps, providing proof of when events occurred.
- */
 @Service
 public class TimestampService {
     private static final Logger log = LoggerFactory.getLogger(TimestampService.class);
@@ -49,15 +45,8 @@ public class TimestampService {
         }
     }
 
-    /**
-     * Signs the current timestamp along with the data hash.
-     * The signature proves that the data existed at this specific time.
-     *
-     * @param dataHash the hash of the data being timestamped
-     * @return a SignedTimestamp containing the timestamp and its signature
-     */
     public SignedTimestamp signTimestamp(String dataHash) {
-        // Truncate to microseconds to match PostgreSQL precision
+        // this caused a whole lotta different problems, but should be like this to match postgresql time
         LocalDateTime timestamp = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
         String dataToSign = dataHash + "|" + timestamp.toString();
 
@@ -74,13 +63,7 @@ public class TimestampService {
         }
     }
 
-    /**
-     * Verifies that a signed timestamp is authentic and was signed by this server.
-     *
-     * @param dataHash        the original data hash
-     * @param signedTimestamp the timestamp with signature to verify
-     * @return true if the signature is valid
-     */
+    // checks if the signed timestamp is authentic and was signed by this server
     public boolean verifyTimestamp(String dataHash, SignedTimestamp signedTimestamp) {
         String dataToVerify = dataHash + "|" + signedTimestamp.timestamp().toString();
 
@@ -96,9 +79,7 @@ public class TimestampService {
         }
     }
 
-    /**
-     * Returns the public key in PEM format for external verification.
-     */
+    // only transforms the key into the PEM format
     public String getPublicKeyPem() {
         String base64 = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         StringBuilder pem = new StringBuilder();
@@ -112,7 +93,6 @@ public class TimestampService {
     }
 
     private void loadKeysFromFiles() throws Exception {
-        // Load private key
         String privateKeyPem = Files.readString(Path.of(privateKeyPath));
         String privateKeyBase64 = privateKeyPem
                 .replace("-----BEGIN PRIVATE KEY-----", "")
@@ -123,7 +103,6 @@ public class TimestampService {
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         privateKey = keyFactory.generatePrivate(privateSpec);
 
-        // Load public key
         String publicKeyPem = Files.readString(Path.of(publicKeyPath));
         String publicKeyBase64 = publicKeyPem
                 .replace("-----BEGIN PUBLIC KEY-----", "")

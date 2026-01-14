@@ -51,7 +51,6 @@ public class ProductChainService {
                 + eventType
                 + metadata;
 
-        // Verify signature using CryptoService
         PublicKey publicKey = cryptoService.loadPublicKeyFromPem(actor.getPublicKey());
         boolean validSignature = cryptoService.verifySignature(
                 data.getBytes(StandardCharsets.UTF_8), signatureBase64, publicKey);
@@ -61,11 +60,9 @@ public class ProductChainService {
                     "Invalid signature for event on product: " + productCode);
         }
 
-        // Calculate hash using HashService
         String currentHash = hashService.calculateIntegrityHash(
                 lastHash, actorName, productCode, eventType, metadata);
 
-        // Sign timestamp to prove when event was registered
         SignedTimestamp signedTimestamp = timestampService.signTimestamp(currentHash);
 
         ProductChain productChain = new ProductChain(
@@ -99,7 +96,6 @@ public class ProductChainService {
                     return false;
                 }
 
-                // Verify actor signature
                 PublicKey publicKey = cryptoService.loadPublicKeyFromPem(event.getPublicKeySnapshot());
                 String data = (previousHash == null ? "BEGIN" : previousHash)
                         + event.getActor()
@@ -114,7 +110,6 @@ public class ProductChainService {
                     return false;
                 }
 
-                // Verify timestamp signature
                 SignedTimestamp signedTimestamp = new SignedTimestamp(
                         event.getTrustedTimestamp(), event.getTimestampSignature());
                 if (!timestampService.verifyTimestamp(event.getCurrentHash(), signedTimestamp)) {

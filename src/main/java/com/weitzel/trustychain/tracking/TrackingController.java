@@ -61,7 +61,6 @@ public class TrackingController {
             @PathVariable String productCode,
             @RequestParam(defaultValue = "300") int size) {
 
-        // Verify product exists
         List<ProductChain> events = productChainRepository.findByProductCodeOrderByCreatedAtAsc(productCode);
         if (events.isEmpty()) {
             return ResponseEntity.notFound().build();

@@ -51,11 +51,7 @@ public class ProductChain {
     @Column(name = "timestamp_signature", nullable = false)
     private String timestampSignature;
 
-    /**
-     * Constructor for creating a new ProductChain event.
-     * Hash is calculated by HashService and passed as parameter.
-     * Timestamp is signed by TimestampService for proof of time.
-     */
+    // new event, timestamp grants proof of time
     public ProductChain(String actor, String productCode, String eventType, String metadata,
             String previousHash, String signature, String publicKeySnapshot, String currentHash,
             LocalDateTime trustedTimestamp, String timestampSignature) {
