@@ -1,6 +1,6 @@
 package com.weitzel.trustychain.service;
 
-import com.weitzel.trustychain.tracking.TrackingService;
+import com.weitzel.trustychain.chain.TrackingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class TrackingServiceTest {
     void shouldGenerateTrackingUrl() {
         String url = trackingService.generateTrackingUrl("CAFE-2024-001");
 
-        assertEquals("http://localhost:8080/api/tracking/CAFE-2024-001", url);
+        assertEquals("http://localhost:8080/api/product-chain/CAFE-2024-001", url);
     }
 
     @Test
@@ -54,7 +54,7 @@ class TrackingServiceTest {
     void shouldGenerateQRCodeUrl() {
         String url = trackingService.generateQRCodeUrl("CAFE-2024-001");
 
-        assertEquals("http://localhost:8080/api/tracking/CAFE-2024-001/qr", url);
+        assertEquals("http://localhost:8080/api/product-chain/CAFE-2024-001/qr", url);
     }
 
     @Test
@@ -64,6 +64,6 @@ class TrackingServiceTest {
 
         String url = trackingService.generateTrackingUrl("PROD-001");
 
-        assertEquals("https://api.trustychain.com/api/tracking/PROD-001", url);
+        assertEquals("https://api.trustychain.com/api/product-chain/PROD-001", url);
     }
 }

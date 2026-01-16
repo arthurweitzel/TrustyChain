@@ -1,4 +1,4 @@
-package com.weitzel.trustychain.tracking.dto;
+package com.weitzel.trustychain.chain.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -4,7 +4,9 @@ import com.weitzel.trustychain.auth.JwtAuthenticationFilter;
 import com.weitzel.trustychain.auth.JwtService;
 import com.weitzel.trustychain.chain.ProductChain;
 import com.weitzel.trustychain.chain.ProductChainController;
+import com.weitzel.trustychain.chain.ProductChainRepository;
 import com.weitzel.trustychain.chain.ProductChainService;
+import com.weitzel.trustychain.chain.TrackingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -30,6 +33,12 @@ class ProductChainControllerTest {
 
     @MockBean
     private ProductChainService productChainService;
+
+    @MockBean
+    private ProductChainRepository productChainRepository;
+
+    @MockBean
+    private TrackingService trackingService;
 
     @MockBean
     private JwtService jwtService;
@@ -71,22 +80,50 @@ class ProductChainControllerTest {
     }
 
     @Test
-    @DisplayName("Should verify chain")
-    void shouldVerifyChain() throws Exception {
-        when(productChainService.verifyChainIntegrity("PROD-001")).thenReturn(true);
+    @DisplayName("Should get product history")
+    void shouldGetProductHistory() throws Exception {
+        ProductChain event = new ProductChain();
+        event.setActor("Test Actor");
+        event.setProductCode("PROD-001");
+        event.setEventType("CREATE");
+        event.setMetadata("metadata");
+        event.setCurrentHash("hash123");
+        event.setTrustedTimestamp(LocalDateTime.now());
 
-        mockMvc.perform(get("/api/product-chain/verify/PROD-001"))
+        when(productChainRepository.findByProductCodeOrderByCreatedAtAsc("PROD-001"))
+                .thenReturn(List.of(event));
+        when(productChainService.verifyChainIntegrity("PROD-001")).thenReturn(true);
+        when(trackingService.generateQRCodeUrl("PROD-001"))
+                .thenReturn("http://localhost:8080/api/product-chain/PROD-001/qr");
+
+        mockMvc.perform(get("/api/product-chain/PROD-001"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(jsonPath("$.productCode").value("PROD-001"))
+                .andExpect(jsonPath("$.isValid").value(true))
+                .andExpect(jsonPath("$.events").isArray());
     }
 
     @Test
-    @DisplayName("Should return false for invalid chain")
-    void shouldReturnFalseForInvalidChain() throws Exception {
-        when(productChainService.verifyChainIntegrity("INVALID")).thenReturn(false);
+    @DisplayName("Should verify chain integrity")
+    void shouldVerifyChainIntegrity() throws Exception {
+        ProductChain event = new ProductChain();
+        when(productChainRepository.findByProductCodeOrderByCreatedAtAsc("PROD-001"))
+                .thenReturn(List.of(event));
+        when(productChainService.verifyChainIntegrity("PROD-001")).thenReturn(true);
 
-        mockMvc.perform(get("/api/product-chain/verify/INVALID"))
+        mockMvc.perform(get("/api/product-chain/PROD-001/verify"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("false"));
+                .andExpect(jsonPath("$.productCode").value("PROD-001"))
+                .andExpect(jsonPath("$.isValid").value(true));
+    }
+
+    @Test
+    @DisplayName("Should return not found for empty product")
+    void shouldReturnNotFoundForEmptyProduct() throws Exception {
+        when(productChainRepository.findByProductCodeOrderByCreatedAtAsc("UNKNOWN"))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/api/product-chain/UNKNOWN"))
+                .andExpect(status().isNotFound());
     }
 }

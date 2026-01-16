@@ -27,13 +27,9 @@ public class AssistantController {
     @Operation(summary = "Chat with AI crypto assistant")
     public Mono<ResponseEntity<?>> chatWithAssistant(@Valid @RequestBody ChatRequest request) {
         String prompt = String.format("""
-                Você é um especialista em criptografia, blockchain e segurança. Responda à seguinte pergunta
-                de forma clara, precisa e em português:
+                Answer the questions in english:
 
-                Pergunta: %s
-
-                Forneça informações precisas, atualizadas e relevantes sobre o tema.
-                Se a pergunta envolver recomendações de segurança, inclua as melhores práticas atuais.
+                Question: %s
                 """, request.question());
 
         return ollamaService.generateResponse(prompt)

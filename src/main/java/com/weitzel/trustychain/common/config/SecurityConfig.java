@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 "/api/assistant/health",
                                 "/api/key-generation/**",
                                 "/api/tracking/**",
+                                "/api/product-chain/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html")

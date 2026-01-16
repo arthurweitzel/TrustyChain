@@ -1,4 +1,4 @@
-package com.weitzel.trustychain.tracking;
+package com.weitzel.trustychain.chain;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -38,10 +38,10 @@ public class TrackingService {
     }
 
     public String generateTrackingUrl(String productCode) {
-        return baseUrl + "/api/tracking/" + productCode;
+        return baseUrl + "/api/product-chain/" + productCode;
     }
 
     public String generateQRCodeUrl(String productCode) {
-        return baseUrl + "/api/tracking/" + productCode + "/qr";
+        return baseUrl + "/api/product-chain/" + productCode + "/qr";
     }
 }

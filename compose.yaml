@@ -12,5 +12,15 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: always
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    network_mode: "host"
+
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  ollama_data:

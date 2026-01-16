@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException e) {
-        log.error("Runtime exception: {}", e.getMessage());
+        log.error("Runtime exception ocurred", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST));
     }
