@@ -22,8 +22,8 @@ public class ProductChainController {
     private final TrackingService trackingService;
 
     public ProductChainController(ProductChainService productChainService,
-                                  ProductChainRepository productChainRepository,
-                                  TrackingService trackingService) {
+            ProductChainRepository productChainRepository,
+            TrackingService trackingService) {
         this.productChainService = productChainService;
         this.productChainRepository = productChainRepository;
         this.trackingService = trackingService;
@@ -64,6 +64,15 @@ public class ProductChainController {
         String qrCodeUrl = trackingService.generateQRCodeUrl(productCode);
 
         return ResponseEntity.ok(new TrackingResponse(productCode, isValid, eventDTOs, qrCodeUrl));
+    }
+
+    @GetMapping(value = "/{productCode}/last-hash", produces = MediaType.TEXT_PLAIN_VALUE)
+    @Operation(summary = "Get last hash for product", description = "Returns the last hash in the chain for signing new events. Returns empty string for new products.")
+    public ResponseEntity<String> getLastHash(@PathVariable String productCode) {
+        return ResponseEntity.ok(
+                productChainRepository.findTopByProductCodeOrderByCreatedAtDesc(productCode)
+                        .map(ProductChain::getCurrentHash)
+                        .orElse(""));
     }
 
     @GetMapping("/{productCode}/qr")

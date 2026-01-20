@@ -5,7 +5,6 @@ import com.weitzel.trustychain.assistant.OllamaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,10 +16,11 @@ class OllamaServiceTest {
 
     @BeforeEach
     void setUp() {
-        ollamaService = new OllamaService(WebClient.builder(), objectMapper);
-        ReflectionTestUtils.setField(ollamaService, "ollamaBaseUrl", "http://localhost:11434");
-        ReflectionTestUtils.setField(ollamaService, "defaultModel", "llama3.2");
-        ReflectionTestUtils.setField(ollamaService, "timeoutSeconds", 30);
+        ollamaService = new OllamaService(
+                WebClient.builder(),
+                objectMapper,
+                "http://localhost:11434",
+                "llama3.2");
     }
 
     @Test
