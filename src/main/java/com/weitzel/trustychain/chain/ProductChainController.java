@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/product-chain")
@@ -41,15 +43,34 @@ public class ProductChainController {
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/{productCode}")
-    @Operation(summary = "Get product tracking history", description = "Returns the complete chain history for a product")
-    public ResponseEntity<TrackingResponse> getProductTracking(@PathVariable String productCode) {
-        List<ProductChain> events = productChainRepository.findByProductCodeOrderByCreatedAtAsc(productCode);
+    @GetMapping("/{query}")
+    @Operation(summary = "Get product tracking history", description = "Returns the complete chain history for a product. Searches by product code, hash, or UUID.")
+    public ResponseEntity<TrackingResponse> getProductTracking(@PathVariable String query) {
+        List<ProductChain> events = productChainRepository.findByProductCodeOrderByCreatedAtAsc(query);
+
+        if (events.isEmpty()) {
+            Optional<ProductChain> byHash = productChainRepository.findByCurrentHash(query);
+            if (byHash.isPresent()) {
+                events = productChainRepository.findByProductCodeOrderByCreatedAtAsc(byHash.get().getProductCode());
+            }
+        }
+
+        if (events.isEmpty()) {
+            try {
+                UUID uuid = UUID.fromString(query);
+                Optional<ProductChain> byId = productChainRepository.findById(uuid);
+                if (byId.isPresent()) {
+                    events = productChainRepository.findByProductCodeOrderByCreatedAtAsc(byId.get().getProductCode());
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
 
         if (events.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
+        String productCode = events.get(0).getProductCode();
         boolean isValid = productChainService.verifyChainIntegrity(productCode);
 
         List<ChainEventDTO> eventDTOs = events.stream()

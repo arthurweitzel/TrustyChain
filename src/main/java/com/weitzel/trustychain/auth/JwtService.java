@@ -32,13 +32,14 @@ public class JwtService {
     @PostConstruct
     public void init() {
         if (jwtSecret == null || jwtSecret.isBlank()) {
-            log.warn("JWT secret not configured! Generating random key. Tokens will be invalid after restart.");
-            this.secretKey = Jwts.SIG.HS256.key().build();
-        } else {
-            byte[] keyBytes = Base64.getDecoder().decode(jwtSecret);
-            this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-            log.info("JWT secret loaded from configuration");
+            throw new IllegalStateException("JWT_SECRET environment variable is required. Generate with: openssl rand -base64 32");
         }
+        byte[] keyBytes = Base64.getDecoder().decode(jwtSecret);
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException("JWT_SECRET must be at least 256 bits (32 bytes) when decoded from Base64");
+        }
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        log.info("JWT secret loaded successfully");
     }
 
     public String generateToken(Authentication authentication) {

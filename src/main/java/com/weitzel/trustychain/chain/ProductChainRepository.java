@@ -14,4 +14,6 @@ public interface ProductChainRepository extends JpaRepository<ProductChain, UUID
     List<ProductChain> findByProductCodeOrderByCreatedAtAsc(String productCode);
 
     List<ProductChain> findByActor(String actor);
+
+    Optional<ProductChain> findByCurrentHash(String currentHash);
 }

@@ -4,6 +4,9 @@
 *.env
 !.env.example
 
+# Timestamp signing keys (sensitive!)
+.keys/
+
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
