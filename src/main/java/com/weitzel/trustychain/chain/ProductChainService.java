@@ -38,12 +38,10 @@ public class ProductChainService {
     @Transactional
     public ProductChain registerEvent(String actorName, String productCode, String eventType,
             String metadata, String signatureBase64) {
-        // Actor must exist - no auto-creation for security
         Actor actor = actorRepository.findByName(actorName)
                 .orElseThrow(() -> new Exceptions.ActorNotFoundException(
                         "Actor not found: " + actorName + ". Please register first."));
 
-        // Signature is required
         if (signatureBase64 == null || signatureBase64.isBlank()) {
             throw new Exceptions.InvalidSignatureException(
                     "Signature is required for creating chain events.");
@@ -61,7 +59,6 @@ public class ProductChainService {
 
         PublicKey publicKey = cryptoService.loadPublicKeyFromPem(actor.getPublicKey());
 
-        // Always validate signature - no bypass
         boolean validSignature = cryptoService.verifySignature(
                 data.getBytes(StandardCharsets.UTF_8), signatureBase64, publicKey);
 

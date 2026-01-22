@@ -46,7 +46,7 @@ public class TimestampService {
     }
 
     public SignedTimestamp signTimestamp(String dataHash) {
-        // this caused a whole lotta different problems, but should be like this to match postgresql time
+        // truncated to microseconds to match PostgreSQL timestamp precision
         LocalDateTime timestamp = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
         String dataToSign = dataHash + "|" + timestamp.toString();
 

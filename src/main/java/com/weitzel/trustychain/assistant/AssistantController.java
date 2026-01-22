@@ -38,6 +38,7 @@ public class AssistantController {
                         new ErrorResponse("AI service unavailable", e.getMessage()))));
     }
 
+    // esse endpoint infelizmente nao foi usado, mas no futuro gostaria de implementa-lo
     @GetMapping("/health")
     @Operation(summary = "Check AI service health")
     public Mono<ResponseEntity<HealthResponse>> checkHealth() {
